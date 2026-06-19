@@ -19,6 +19,9 @@ import { FuturesChartPanel } from "@/components/dashboard/widgets/FuturesChartPa
 import { YieldCurveLiveChart } from "@/components/dashboard/widgets/YieldCurveLiveChart";
 import { HeatmapTrendChart } from "@/components/dashboard/widgets/HeatmapTrendChart";
 import { useLiveCharts } from "@/hooks/useLiveCharts";
+import { SectorRankingPanel } from "@/components/heatmap/SectorRankingPanel";
+import { GovMonBuySellPanel } from "@/components/heatmap/GovMonBuySellPanel";
+import { todayKstYmd } from "@/lib/utils";
 
 function loadSources(): Record<string, boolean> {
   try {
@@ -51,6 +54,7 @@ export function IntegratedDashboardClient() {
   const dualEnabled = sources.dual !== false;
   const heatmapEnabled = sources.heatmap !== false;
   const marketEnabled = sources.market !== false;
+  const rankingDate = todayKstYmd();
 
   return (
     <>
@@ -161,6 +165,22 @@ export function IntegratedDashboardClient() {
             </div>
           ) : null}
         </section>
+
+        {heatmapEnabled ? (
+          <section className="terminal-section">
+            <h2 className="terminal-section-title">히트맵 랭킹 · GOV/MON</h2>
+            <div className="heatmap-panels-stack">
+              <SectorRankingPanel dateYmd={rankingDate} />
+              <GovMonBuySellPanel dateYmd={rankingDate} />
+            </div>
+          </section>
+        ) : (
+          <section className="terminal-section">
+            <div className="terminal-widget">
+              <div className="empty-state">Heatmap API 소스가 꺼져 있어 랭킹을 표시할 수 없습니다.</div>
+            </div>
+          </section>
+        )}
       </div>
     </>
   );
