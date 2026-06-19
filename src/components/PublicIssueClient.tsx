@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
+import { kstStartOfDayMs } from "@/lib/utils";
 import { httpGet } from "@/lib/api";
 
 type PublicRow = Record<string, unknown> & {
@@ -29,9 +30,12 @@ function rowText(row: PublicRow): string {
 
 function parseBidDate(bid: string | undefined): number | null {
   if (!bid) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(bid)) {
+    return new Date(`${bid}T00:00:00+09:00`).getTime();
+  }
   const d = new Date(bid);
   if (Number.isNaN(d.getTime())) return null;
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  return kstStartOfDayMs(d);
 }
 
 export function PublicIssueClient() {
@@ -64,9 +68,7 @@ export function PublicIssueClient() {
   }, []);
 
   const todayRows = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const t = today.getTime();
+    const t = kstStartOfDayMs();
     return upcoming
       .filter((row) => {
         const ts = parseBidDate(row.bid_date);

@@ -6,6 +6,7 @@ import {
   addBusinessDays,
   formatYmdDisplay,
   heatmapColor,
+  todayKstYmd,
   toYmd,
 } from "@/lib/utils";
 import { HEATMAP_CATEGORIES } from "@/lib/config";
@@ -34,7 +35,7 @@ function normalizeHeatmap(data: HeatmapData) {
 }
 
 export function HeatmapClient() {
-  const [date, setDate] = useState(() => toYmd(new Date()));
+  const [date, setDate] = useState(() => todayKstYmd());
   const [data, setData] = useState<ReturnType<typeof normalizeHeatmap> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

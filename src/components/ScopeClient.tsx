@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { ConnectionBadge } from "@/components/ConnectionBadge";
 import { httpGet, httpPost } from "@/lib/api";
+import { formatDisplayTime } from "@/lib/utils";
 import { WS_URL_KBOND } from "@/lib/config";
 
 const CATEGORY_TABS = [
@@ -223,7 +224,7 @@ export function ScopeClient() {
             <tbody>
               {filteredRows.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.trade_time ?? "-"}</td>
+                  <td>{formatDisplayTime(row.trade_time)}</td>
                   <td>{row.trade_name ?? row.issuer ?? "-"}</td>
                   <td>{row.bond_expr_dt ?? "-"}</td>
                   <td>{row.credit_avg || row.credit_rating || "-"}</td>

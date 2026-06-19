@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { httpGet } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn, formatKstDateTime } from "@/lib/utils";
 
 type NewsItem = {
   id?: string;
@@ -27,7 +27,9 @@ function itemText(item: NewsItem): string {
 }
 
 function itemDate(item: NewsItem): string {
-  return item.published_at ?? item.publishedAt ?? item.date ?? "";
+  const raw = item.published_at ?? item.publishedAt ?? item.date ?? "";
+  if (!raw) return "";
+  return formatKstDateTime(raw);
 }
 
 export function NewsFeedPanel({ open, onClose }: { open: boolean; onClose: () => void }) {

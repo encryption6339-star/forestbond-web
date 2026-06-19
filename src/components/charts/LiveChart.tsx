@@ -11,6 +11,7 @@ import {
   type ISeriesApi,
 } from "lightweight-charts";
 import type { CandlePoint, HistPoint, LinePoint } from "@/hooks/useLiveCharts";
+import { formatKstChartTick, formatKstChartTime } from "@/lib/utils";
 
 type Props = {
   line?: LinePoint[];
@@ -36,7 +37,8 @@ export function LiveChart({ line = [], candles = [], volume = [], height = 200, 
       layout: { background: { type: ColorType.Solid, color: "#ffffff" }, textColor: "#333" },
       grid: { vertLines: { color: "#eef2f7" }, horzLines: { color: "#eef2f7" } },
       rightPriceScale: { borderColor: "#cbd5e1" },
-      timeScale: { borderColor: "#cbd5e1", timeVisible: true, secondsVisible: true },
+      timeScale: { borderColor: "#cbd5e1", timeVisible: true, secondsVisible: true, tickMarkFormatter: (time: unknown) => formatKstChartTick(time) },
+      localization: { locale: "ko-KR", timeFormatter: (time: unknown) => formatKstChartTime(time) },
       crosshair: { mode: 0 },
     });
     chartRef.current = chart;

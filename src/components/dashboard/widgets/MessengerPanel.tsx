@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { BondMessage } from "@/lib/types";
-import { copyText, getMessengerRowStyle, matchesSearch } from "@/lib/utils";
+import { copyText, formatDisplayTime, getMessengerRowStyle, matchesSearch } from "@/lib/utils";
 
 export function MessengerPanel({ title, messages }: { title: string; messages: BondMessage[] }) {
   const [query, setQuery] = useState("");
@@ -34,7 +34,7 @@ export function MessengerPanel({ title, messages }: { title: string; messages: B
                   setTimeout(() => setCopiedId(null), 1200);
                 }}
               >
-                <span className="messenger-meta">{msg.trade_name} ({msg.trade_time})</span>
+                <span className="messenger-meta">{msg.trade_name} ({formatDisplayTime(msg.trade_time)})</span>
                 {" : "}
                 <strong>{msg.message}</strong>
                 {msg.trade_company ? <span className="messenger-company"> ({msg.trade_company})</span> : null}
@@ -44,7 +44,7 @@ export function MessengerPanel({ title, messages }: { title: string; messages: B
           })
         )}
       </div>
-      <div className="messenger-status">최종 수신 {messages[0]?.trade_time ?? "--:--:--"}</div>
+      <div className="messenger-status">최종 수신 {formatDisplayTime(messages[0]?.trade_time)} (KST)</div>
     </div>
   );
 }

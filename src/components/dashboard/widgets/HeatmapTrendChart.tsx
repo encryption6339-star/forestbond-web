@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { LiveChart } from "@/components/charts/LiveChart";
 import type { LinePoint } from "@/hooks/useLiveCharts";
+import { chartTimeToUnix } from "@/lib/utils";
 
 type StatsDay = { matrix?: number[][]; bucketTotals?: number[] };
 
@@ -20,7 +21,7 @@ export function HeatmapTrendChart() {
           const total = entry?.bucketTotals?.reduce((a, b) => a + b, 0)
             ?? entry?.matrix?.flat().reduce((a, b) => a + (b || 0), 0)
             ?? 0;
-          return { time: Math.floor(new Date(day).getTime() / 1000), value: total };
+          return { time: chartTimeToUnix(day) ?? 0, value: total };
         });
         setPoints(pts);
       })

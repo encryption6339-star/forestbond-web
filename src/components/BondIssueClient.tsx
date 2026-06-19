@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { parseYmd, todayKstYmd, toYmd } from "@/lib/utils";
 import { httpGet } from "@/lib/api";
 
 type GovRow = {
@@ -58,7 +59,7 @@ export function BondIssueClient() {
   const [holidays, setHolidays] = useState<Map<string, HolidayInfo>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [cursor, setCursor] = useState(() => startOfMonth(new Date()));
+  const [cursor, setCursor] = useState(() => startOfMonth(parseYmd(todayKstYmd())));
 
   useEffect(() => {
     const ac = new AbortController();
@@ -123,13 +124,12 @@ export function BondIssueClient() {
   const weeks = useMemo(() => monthMatrix(cursor), [cursor]);
 
   const weekBoard = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = parseYmd(todayKstYmd());
     const end = new Date(today);
     end.setDate(end.getDate() + 7);
     const items: { date: string; rows: GovRow[] }[] = [];
     for (let d = new Date(today); d < end; d.setDate(d.getDate() + 1)) {
-      const key = ymd(d);
+      const key = toYmd(d);
       const rows = byDate.get(key) ?? [];
       if (rows.length) items.push({ date: key, rows });
     }
@@ -156,7 +156,7 @@ export function BondIssueClient() {
               <button type="button" className="btn" onClick={() => setCursor((c) => addMonths(c, -1))}>
                 <ChevronLeft size={14} />
               </button>
-              <button type="button" className="btn" onClick={() => setCursor(startOfMonth(new Date()))}>
+              <button type="button" className="btn" onClick={() => setCursor(startOfMonth(parseYmd(todayKstYmd())))}>
                 오늘
               </button>
               <button type="button" className="btn" onClick={() => setCursor((c) => addMonths(c, 1))}>

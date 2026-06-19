@@ -3,6 +3,7 @@
 import { LiveChart } from "@/components/charts/LiveChart";
 import type { CandlePoint, HistPoint, LinePoint } from "@/hooks/useLiveCharts";
 import type { DualBondRow } from "@/lib/types";
+import { formatDisplayTime } from "@/lib/utils";
 
 function fmtPriceChange(candles: CandlePoint[]) {
   if (candles.length < 2) return 0;
@@ -53,7 +54,7 @@ export function FuturesChartPanel({
       <div className="chart-panel-footer">
         <span>민평 {y != null ? y.toFixed(3) + "%" : "-"}</span>
         <span>{lastRow?.action === "buy" ? "사자" : lastRow?.action === "sell" ? "팔자" : "관망"}</span>
-        <span>{lastRow?.tradeTime ?? ""}</span>
+        <span>{formatDisplayTime(lastRow?.tradeTime)}</span>
       </div>
     </div>
   );

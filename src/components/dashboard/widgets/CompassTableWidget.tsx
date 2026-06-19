@@ -1,6 +1,7 @@
 "use client";
 
 import type { DualBondRow } from "@/lib/types";
+import { formatDisplayTime } from "@/lib/utils";
 
 export function CompassTableWidget({ title, rows }: { title: string; rows: DualBondRow[] }) {
   return (
@@ -21,7 +22,7 @@ export function CompassTableWidget({ title, rows }: { title: string; rows: DualB
                 <td className={row.action === "buy" ? "text-up" : row.action === "sell" ? "text-down" : ""}>
                   {row.action === "buy" ? "사자" : row.action === "sell" ? "팔자" : "-"}
                 </td>
-                <td>{row.tradeTime ?? "-"}</td>
+                <td>{formatDisplayTime(row.tradeTime)}</td>
                 <td className="truncate">{row.additionInfo?.split("\n")[0] ?? "-"}</td>
               </tr>
             ))}

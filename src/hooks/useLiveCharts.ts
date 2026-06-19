@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import type { BondMessage, DualBondRow } from "@/lib/types";
+import { nowKstUnix } from "@/lib/utils";
 
 export type LinePoint = { time: number; value: number };
 export type CandlePoint = { time: number; open: number; high: number; low: number; close: number };
@@ -105,7 +106,7 @@ export function useLiveCharts(govRows: DualBondRow[], monRows: DualBondRow[], me
   const [monMain, setMonMain] = useState<SeriesState>({ line: [], candles: [], volume: [] });
 
   useEffect(() => {
-    const now = Math.floor(Date.now() / 1000);
+    const now = nowKstUnix();
     applyRow(setGov3y, pickRow(govRows, GOV_3Y_CODES), now);
     applyRow(setGov10y, pickRow(govRows, GOV_10Y_CODES), now);
     applyRow(setMonMain, pickRow(monRows), now);
@@ -113,7 +114,7 @@ export function useLiveCharts(govRows: DualBondRow[], monRows: DualBondRow[], me
 
   useEffect(() => {
     if (messages.length === 0) return;
-    const now = Math.floor(Date.now() / 1000);
+    const now = nowKstUnix();
     const latestGov = messages.find((m) => m.category === "gov");
     const latestMon = messages.find((m) => m.category === "mon");
     if (latestGov) {
@@ -125,7 +126,7 @@ export function useLiveCharts(govRows: DualBondRow[], monRows: DualBondRow[], me
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const now = Math.floor(Date.now() / 1000);
+      const now = nowKstUnix();
       applyRow(setGov3y, pickRow(govRows, GOV_3Y_CODES), now, true);
       applyRow(setGov10y, pickRow(govRows, GOV_10Y_CODES), now, true);
       applyRow(setMonMain, pickRow(monRows), now, true);

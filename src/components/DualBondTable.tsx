@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { actionLabel } from "@/lib/utils";
 import type { DualBondRow } from "@/lib/types";
+import { formatDisplayTime } from "@/lib/utils";
 
 export function DualBondTable({
   title,
@@ -65,7 +66,7 @@ export function DualBondTable({
                     <td className={action === "buy" ? "action-buy" : action === "sell" ? "action-sell" : ""}>
                       {actionLabel(action)}
                     </td>
-                    <td>{row.tradeTime ?? "-"}</td>
+                    <td>{formatDisplayTime(row.tradeTime)}</td>
                     <td className="max-w-[280px] whitespace-pre-wrap text-[11px]">
                       {expanded === key ? row.additionInfo ?? "-" : (row.additionInfo ?? "-").split("\n")[0]}
                     </td>

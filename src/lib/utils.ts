@@ -29,6 +29,102 @@ const CREDIT_LABEL: Record<number, string> = Object.fromEntries(
   Object.entries(CREDIT_NUM).map(([k, v]) => [v, k])
 );
 
+
+export const KST_TIMEZONE = "Asia/Seoul";
+
+export function formatKstTime(unixSec: number, withSeconds = true): string {
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: KST_TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: withSeconds ? "2-digit" : undefined,
+    hour12: false,
+  }).format(new Date(unixSec * 1000));
+}
+
+export function formatKstDateTime(value: Date | string | number): string {
+  const date =
+    typeof value === "number"
+      ? new Date(value > 1e12 ? value : value * 1000)
+      : new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value ?? "");
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: KST_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date);
+}
+
+export function formatKstDate(value: Date | string | number): string {
+  const date = typeof value === "string" || typeof value === "number" ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return String(value ?? "");
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: KST_TIMEZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
+export function todayKstYmd(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: KST_TIMEZONE }).format(new Date()).replace(/-/g, "");
+}
+
+export function nowKstUnix(): number {
+  return Math.floor(Date.now() / 1000);
+}
+
+export function kstStartOfDayMs(date = new Date()): number {
+  const ymd = toYmd(date);
+  return new Date(`${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}T00:00:00+09:00`).getTime();
+}
+
+export function chartTimeToUnix(time: unknown): number | null {
+  if (typeof time === "number") return time;
+  if (typeof time === "string") {
+    return Math.floor(new Date(`${time}T00:00:00+09:00`).getTime() / 1000);
+  }
+  if (time && typeof time === "object" && "year" in time) {
+    const t = time as { year: number; month: number; day: number };
+    const y = t.year;
+    const m = String(t.month).padStart(2, "0");
+    const d = String(t.day).padStart(2, "0");
+    return Math.floor(new Date(`${y}-${m}-${d}T00:00:00+09:00`).getTime() / 1000);
+  }
+  return null;
+}
+
+export function formatKstChartTime(time: unknown): string {
+  const unix = chartTimeToUnix(time);
+  if (unix == null) return "";
+  return formatKstTime(unix, true);
+}
+
+export function formatKstChartTick(time: unknown): string {
+  const unix = chartTimeToUnix(time);
+  if (unix == null) return "";
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: KST_TIMEZONE,
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(unix * 1000));
+}
+
+export function formatDisplayTime(value?: string | null): string {
+  if (!value) return "--:--:--";
+  const trimmed = value.trim();
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(trimmed)) return trimmed;
+  return formatKstDateTime(trimmed);
+}
+
 export function normalizeSearch(text: string): string {
   return (text || "")
     .replace(/[‐‑‒–—―－]/g, "-")
@@ -61,7 +157,7 @@ export function formatRow(msg: BondMessage, includeSource: boolean) {
   const hasName = msg.trade_name.trim().length > 0 && !msg.trade_name.includes("**");
   const prefix = includeSource
     ? `${msg.trade_name} (${msg.trade_time})`
-    : msg.trade_time;
+     : formatDisplayTime(msg.trade_time);
   const company = includeSource && msg.trade_company ? ` (${msg.trade_company})` : "";
   return { prefix, company, hasName };
 }
@@ -137,18 +233,14 @@ export function formatYmdDisplay(ymd: string): string {
 }
 
 export function toYmd(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}${m}${d}`;
+  return new Intl.DateTimeFormat("en-CA", { timeZone: KST_TIMEZONE }).format(date).replace(/-/g, "");
 }
 
 export function parseYmd(ymd: string): Date {
-  return new Date(
-    parseInt(ymd.substring(0, 4), 10),
-    parseInt(ymd.substring(4, 6), 10) - 1,
-    parseInt(ymd.substring(6, 8), 10)
-  );
+  const y = ymd.substring(0, 4);
+  const m = ymd.substring(4, 6);
+  const d = ymd.substring(6, 8);
+  return new Date(`${y}-${m}-${d}T12:00:00+09:00`);
 }
 
 export function addBusinessDays(ymd: string, delta: number): string {
@@ -221,4 +313,4 @@ export function getMessengerRowStyle(msg: BondMessage): { bg: string; fg: string
 }
 
 export const heatColor = heatmapColor;
-export const todayIso = () => toYmd(new Date());
+export const todayIso = () => todayKstYmd();
