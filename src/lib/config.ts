@@ -66,6 +66,7 @@ export type NavItem = {
 
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard", section: "Market" },
+  { href: "/auto-quote", label: "Auto Quote", icon: "auto-quote", section: "Market" },
   { href: "/live-market", label: "Live Market", icon: "live", section: "Market" },
   { href: "/compass", label: "KTB/MSB Compass", icon: "compass", section: "Market" },
   { href: "/scope", label: "Bond Scope", icon: "scope", section: "Market" },

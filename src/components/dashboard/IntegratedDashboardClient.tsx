@@ -21,7 +21,6 @@ import { HeatmapTrendChart } from "@/components/dashboard/widgets/HeatmapTrendCh
 import { useLiveCharts } from "@/hooks/useLiveCharts";
 import { SectorRankingPanel } from "@/components/heatmap/SectorRankingPanel";
 import { GovMonBuySellPanel } from "@/components/heatmap/GovMonBuySellPanel";
-import { KbondQuoteConsole } from "@/components/dashboard/KbondQuoteConsole";
 import { todayKstYmd } from "@/lib/utils";
 
 function loadSources(): Record<string, boolean> {
@@ -84,15 +83,6 @@ export function IntegratedDashboardClient() {
         ))}
       </div>
 
-      {mapEnabled || dualEnabled ? (
-        <KbondQuoteConsole
-          messages={feed.messages}
-          govRows={feed.govRows}
-          monRows={feed.monRows}
-          mapConnected={feed.status.map.connected}
-          dualConnected={feed.status.dual.connected}
-        />
-      ) : null}
 
       <div className="integrated-terminal">
         <section className="terminal-section">

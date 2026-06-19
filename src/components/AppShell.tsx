@@ -18,6 +18,7 @@ import {
   Map,
   Menu,
   BookMarked,
+  RefreshCw,
 } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/config";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ const iconMap = {
   live: Activity,
   scope: Crosshair,
   "bond-order": ClipboardList,
+  "auto-quote": RefreshCw,
 } as const;
 
 export function AppShell({
