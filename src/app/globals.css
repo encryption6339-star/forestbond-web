@@ -1090,3 +1090,109 @@ textarea {
   color: var(--card-muted);
   text-align: right;
 }
+﻿
+/* K-bond quote console */
+.kbond-console {
+  --kc-bg: #0a0e1a;
+  --kc-panel: #111827;
+  --kc-border: #1e293b;
+  --kc-gold: #ffb454;
+  --kc-mint: #39e0a8;
+  --kc-red: #ff6b6b;
+  --kc-blue: #60a5fa;
+  --kc-muted: #64748b;
+  --kc-text: #e2e8f0;
+  margin-bottom: 16px;
+  background: var(--kc-bg);
+  border: 1px solid var(--kc-border);
+  border-radius: 12px;
+  overflow: hidden;
+  color: var(--kc-text);
+  font-family: JetBrains Mono, Consolas, monospace;
+  font-size: 12px;
+}
+.kbond-console .num { font-variant-numeric: tabular-nums; }
+.kbond-console-header {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
+  border-bottom: 1px solid var(--kc-border);
+}
+.kbond-console-eyebrow { font-size: 10px; color: var(--kc-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+.kbond-console-title { margin: 0; font-size: 16px; font-weight: 700; color: var(--kc-gold); }
+.kbond-console-title span { color: var(--kc-mint); }
+.kbond-console-sub { margin: 6px 0 0; font-size: 11px; color: var(--kc-muted); max-width: 640px; line-height: 1.4; }
+.kbond-console-status { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.kbond-console-clock { font-size: 18px; font-weight: 700; color: var(--kc-gold); }
+.kbond-console-live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--kc-mint); }
+.kbond-console-live i { width: 7px; height: 7px; border-radius: 50%; background: var(--kc-mint); box-shadow: 0 0 6px var(--kc-mint); animation: kc-pulse 2s infinite; display: inline-block; }
+@keyframes kc-pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+.kbond-console-modebar {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 8px 18px; background: var(--kc-panel); border-bottom: 1px solid var(--kc-border);
+}
+.kbond-console-toggle { display: inline-flex; border: 1px solid var(--kc-border); border-radius: 8px; overflow: hidden; }
+.kbond-console-toggle button {
+  border: none; background: transparent; color: var(--kc-muted); padding: 6px 12px; font-size: 11px; cursor: pointer; font-family: inherit;
+}
+.kbond-console-toggle button.on { background: rgba(57,224,168,.15); color: var(--kc-mint); font-weight: 700; }
+.kbond-console-modenote { font-size: 11px; color: var(--kc-muted); }
+.kbond-console-modenote .good { color: var(--kc-mint); }
+.kbond-console-modenote .bad { color: var(--kc-red); }
+.kbond-console-grid { display: grid; grid-template-columns: 340px 1fr; min-height: 420px; }
+@media (max-width: 960px) { .kbond-console-grid { grid-template-columns: 1fr; } }
+.kbond-console-card { border-right: 1px solid var(--kc-border); display: flex; flex-direction: column; min-height: 0; }
+.kbond-console-grid > section.kbond-console-card { border-right: none; }
+.kbond-console-card h2 {
+  margin: 0; padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--kc-gold);
+  background: var(--kc-panel); border-bottom: 1px solid var(--kc-border);
+}
+.kbond-console-card h2 .badge {
+  font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(57,224,168,.15); color: var(--kc-mint); margin-left: 6px;
+}
+.kbond-console-ce-sub { padding: 6px 14px 0; font-size: 10px; color: var(--kc-muted); }
+.kbond-console-ce-row {
+  display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;
+  padding: 8px 14px; border-bottom: 1px solid rgba(30,41,59,.5);
+}
+.kbond-console-ce-row .lab b { font-size: 11px; color: var(--kc-text); font-weight: 600; }
+.kbond-console-ce-row .ce-val { text-align: right; }
+.kbond-console-ce-row .v { font-size: 14px; font-weight: 700; margin-right: 8px; }
+.kbond-console-ce-row .d { font-size: 10px; }
+.kbond-console-ce-row .up, .kbond-console-q .up { color: var(--kc-red); }
+.kbond-console-ce-row .dn, .kbond-console-q .dn { color: var(--kc-blue); }
+.kbond-console-ce-row .flat { color: var(--kc-gold); }
+.kbond-console-board-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px; background: rgba(255,180,84,.06); border-bottom: 1px solid var(--kc-border);
+}
+.kbond-console-board-head .t { font-size: 11px; font-weight: 700; color: var(--kc-gold); }
+.kbond-console-board-head .alert { font-size: 10px; color: var(--kc-mint); font-weight: 700; }
+.kbond-console-board-head .alert.zero { color: var(--kc-muted); font-weight: 400; }
+.kbond-console-bucket { border-bottom: 1px solid var(--kc-border); }
+.kbond-console-bucket .bk-tag {
+  padding: 6px 14px; font-size: 10px; font-weight: 700; color: var(--kc-gold);
+  background: var(--kc-panel); border-bottom: 1px solid var(--kc-border);
+}
+.kbond-console-bucket .bk-tag .cnt { color: var(--kc-muted); font-weight: 400; }
+.kbond-console-q {
+  display: grid; grid-template-columns: 44px 1fr 52px 72px 56px; gap: 8px; align-items: center;
+  padding: 5px 14px; border-bottom: 1px solid rgba(30,41,59,.4); font-size: 10px;
+}
+.kbond-console-q .side { font-weight: 700; }
+.kbond-console-q .side.O { color: var(--kc-red); }
+.kbond-console-q .side.B { color: var(--kc-blue); }
+.kbond-console-q .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kbond-console-q .anchor { display: block; font-size: 9px; color: var(--kc-muted); }
+.kbond-console-q .yld { color: var(--kc-gold); font-weight: 600; }
+.kbond-console-q .px { color: var(--kc-muted); text-align: right; }
+.kbond-console-empty { padding: 20px 14px; color: var(--kc-muted); font-size: 11px; text-align: center; }
+.kbond-console-legend {
+  display: flex; flex-wrap: wrap; gap: 14px; padding: 8px 18px; background: var(--kc-panel);
+  border-top: 1px solid var(--kc-border); font-size: 10px; color: var(--kc-muted);
+}
+.kbond-console-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+.kbond-console-legend i.up { background: var(--kc-red); }
+.kbond-console-legend i.dn { background: var(--kc-blue); }
+.kbond-console-legend i.gold { background: var(--kc-gold); }
+.kbond-console-legend i.mint { background: var(--kc-mint); }
