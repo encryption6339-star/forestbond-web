@@ -1,4 +1,43 @@
-﻿const sectorCache = new Map<string, SectorRankingData>();
+import type { HeatmapData } from "@/lib/types";
+
+﻿const heatmapCache = new Map<string, HeatmapData>();
+
+function hasHeatmapData(data: HeatmapData | null | undefined): boolean {
+  return (data?.matrix?.length ?? 0) > 0 && (data?.categories?.length ?? 0) > 0;
+}
+
+async function fetchHeatmapForDate(key: string): Promise<HeatmapData | null> {
+  try {
+    const res = await fetch(`/heatmapapi/heatmap?date=${key}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data = (await res.json()) as HeatmapData;
+    return hasHeatmapData(data) ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchHeatmap(dateYmd: string): Promise<HeatmapData> {
+  const key = toApiDate(dateYmd);
+  const cached = heatmapCache.get(key);
+  if (cached && hasHeatmapData(cached)) return cached;
+
+  let data = await fetchHeatmapForDate(key);
+  if (!hasHeatmapData(data)) {
+    const prev = await fetchPrevValidDate(key);
+    if (prev) data = await fetchHeatmapForDate(prev);
+  }
+
+  if (!hasHeatmapData(data)) {
+    throw new Error("히트맵 데이터를 불러올 수 없습니다.");
+  }
+
+  const result = data as HeatmapData;
+  heatmapCache.set(key, result);
+  return result;
+}
+
+const sectorCache = new Map<string, SectorRankingData>();
 const govMonCache = new Map<string, GovMonData>();
 
 let sectorBundlePromise: Promise<Record<string, SectorRankingData>> | null = null;

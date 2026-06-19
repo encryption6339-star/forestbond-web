@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { HeatmapData } from "@/lib/types";
+import { fetchHeatmap } from "@/lib/heatmap-api";
 import { heatColor, todayIso } from "@/lib/utils";
 
 export function HeatmapMiniWidget() {
@@ -9,9 +10,8 @@ export function HeatmapMiniWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/heatmapapi/heatmap?date=${todayIso()}`, { cache: "no-store" })
-      .then((r) => r.json())
-      .then((d: HeatmapData) => setData(d))
+    fetchHeatmap(todayIso())
+      .then((d) => setData(d))
       .catch(() => setData(null))
       .finally(() => setLoading(false));
   }, []);

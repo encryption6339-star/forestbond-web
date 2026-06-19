@@ -12,12 +12,7 @@ import { HEATMAP_CATEGORIES } from "@/lib/config";
 import { PageHeader } from "@/components/PageHeader";
 import { SectorRankingPanel } from "@/components/heatmap/SectorRankingPanel";
 import { GovMonBuySellPanel } from "@/components/heatmap/GovMonBuySellPanel";
-
-async function fetchHeatmap(date: string): Promise<HeatmapData> {
-  const res = await fetch(`/heatmapapi/heatmap?date=${date}`, { cache: "no-store" });
-  if (!res.ok) throw new Error("히트맵 데이터를 불러올 수 없습니다.");
-  return res.json();
-}
+import { fetchHeatmap } from "@/lib/heatmap-api";
 
 async function fetchPrevValidDate(date: string): Promise<string> {
   const res = await fetch(`/heatmapapi/prev-valid-date?date=${date}`, { cache: "no-store" });
