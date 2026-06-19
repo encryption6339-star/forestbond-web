@@ -112,7 +112,7 @@ export function KbondQuoteConsole({
       </div>
 
       <div className="kbond-console-grid">
-        <aside className="kbond-console-card">
+        <aside className="kbond-console-card kbond-console-ce">
           <h2>
             Check Expert 실시간 <span className={`badge ${tickFlash ? "flash" : ""}`}>tick</span>
           </h2>
@@ -131,7 +131,7 @@ export function KbondQuoteConsole({
           ))}
         </aside>
 
-        <section className="kbond-console-card">
+        <section className="kbond-console-card kbond-console-board">
           <div className="kbond-console-board-head">
             <div className="t">K-bond 통합 호가판 · 만기 구간별</div>
             <div className={`alert ${crosses === 0 ? "zero" : ""}`}>체결가능 {Math.round(crosses)}건</div>
@@ -144,6 +144,13 @@ export function KbondQuoteConsole({
             const rows = [...offers, ...bids];
             return (
               <div key={bucket} className="kbond-console-bucket">
+                <div className="kbond-console-qhead">
+                  <span>구분</span>
+                  <span>종목 · 앵커</span>
+                  <span>물량</span>
+                  <span>금리</span>
+                  <span>단가</span>
+                </div>
                 <div className="bk-tag">
                   {bucket} 구간 <span className="cnt">· 팔자 {offers.length} / 사자 {bids.length}</span>
                 </div>
