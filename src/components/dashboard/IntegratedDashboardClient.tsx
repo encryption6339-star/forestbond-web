@@ -55,8 +55,8 @@ export function IntegratedDashboardClient() {
   return (
     <>
       <PageHeader
-        title="통합 터미널"
-        description="K-Bond 메신저 실시간 호가 + CHECK EXPERT+ 스타일 실시간 차트(캔들·민평·거래량)를 한 화면에 연동합니다."
+        title="Dashboard"
+        description="K-Bond 메신저 실시간 호가와 시장 데이터를 한 화면에서 확인합니다."
         actions={
           <>
             <ConnectionBadge status={feed.status.map} prefix="Map" />

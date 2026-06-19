@@ -422,13 +422,7 @@ textarea {
   font-size: 12px;
 }
 
-.data-table th,
-.data-table td {
-  border: 1px solid var(--card-border);
-  padding: 8px 10px;
-  text-align: left;
-  vertical-align: top;
-}
+.data-table th,\n.data-table td {\n  border: 1px solid var(--card-border);\n  padding: 8px 10px;\n  text-align: left;\n  vertical-align: top;\n  color: var(--card-foreground);\n}
 
 .data-table th {
   background: var(--surface-soft);
@@ -598,7 +592,7 @@ textarea {
 .source-bar-label { font-size: 12px; color: var(--card-muted); margin-right: 4px; }
 .source-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--foreground); cursor: pointer; }
 
-.table-scroll { flex: 1; overflow: auto; background: #fff; }
+.table-scroll { flex: 1; overflow: auto; background: var(--card-bg); }
 .data-table.compact th, .data-table.compact td { padding: 4px 6px; font-size: 11px; }
 .text-up { color: #dc2626; font-weight: 600; }
 .text-down { color: #2563eb; font-weight: 600; }

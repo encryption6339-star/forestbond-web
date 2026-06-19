@@ -61,20 +61,21 @@ export type NavItem = {
   href: string;
   label: string;
   icon: string;
-  section?: "Market" | "Guide";
+  section?: "Market" | "Data Analysis" | "Information";
 };
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/dashboard", label: "Terminal", icon: "terminal", section: "Market" },
-  { href: "/compass", label: "Compass", icon: "compass", section: "Market" },
-  { href: "/scope", label: "Scope", icon: "scope", section: "Market" },
-  { href: "/map", label: "Map", icon: "map", section: "Market" },
+  { href: "/dashboard", label: "Dashboard", icon: "dashboard", section: "Market" },
+  { href: "/live-market", label: "Live Market", icon: "live", section: "Market" },
+  { href: "/compass", label: "KTB/MSB Compass", icon: "compass", section: "Market" },
+  { href: "/scope", label: "Bond Scope", icon: "scope", section: "Market" },
+  { href: "/map", label: "Bond Map", icon: "map", section: "Market" },
   { href: "/order-book", label: "Order Book", icon: "book", section: "Market" },
-  { href: "/bond-order", label: "Bond Order", icon: "bond-order", section: "Market" },
+  { href: "/bond-order", label: "Bond Issue", icon: "bond-order", section: "Market" },
   { href: "/bank-issue", label: "Bank Issue", icon: "building", section: "Market" },
   { href: "/public-issue", label: "Public Issue", icon: "landmark", section: "Market" },
   { href: "/bond-issue", label: "Bond Issue", icon: "file", section: "Market" },
-  { href: "/heatmap", label: "Heatmap", icon: "grid", section: "Market" },
-  { href: "/introduction", label: "Introduction", icon: "info", section: "Guide" },
-  { href: "/guide/trade", label: "Trade Guide", icon: "book-open", section: "Guide" },
+  { href: "/heatmap", label: "Bond Heatmap", icon: "grid", section: "Data Analysis" },
+  { href: "/introduction", label: "Introduction", icon: "info", section: "Information" },
+  { href: "/guide/trade", label: "Trade Guide", icon: "book-open", section: "Information" },
 ];

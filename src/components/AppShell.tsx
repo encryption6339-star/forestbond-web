@@ -13,6 +13,7 @@ import {
   Grid3X3,
   Info,
   Landmark,
+  Activity,
   LayoutDashboard,
   Map,
   Menu,
@@ -32,7 +33,8 @@ const iconMap = {
   grid: Grid3X3,
   info: Info,
   "book-open": BookOpen,
-  terminal: LayoutDashboard,
+  dashboard: LayoutDashboard,
+  live: Activity,
   scope: Crosshair,
   "bond-order": ClipboardList,
 } as const;

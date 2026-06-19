@@ -76,7 +76,7 @@ export function HeatmapClient() {
   return (
     <>
       <PageHeader
-        title="채권 호가 히트맵"
+        title="Bond Heatmap"
         description="막무가내 대화방의 기반으로 일자별 히트맵을 확인합니다."
         actions={
           <div className="flex items-center gap-2">

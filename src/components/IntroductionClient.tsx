@@ -7,7 +7,7 @@ export function IntroductionClient() {
     <>
       <PageHeader
         title="FORESTBOND 소개"
-        description="장외채권 시장 정보를 한곳에서 모아 보는 FORESTBOND 클론 터미널입니다."
+        description="장외채권 시장 정보를 한곳에서 모아 보는 FORESTBOND 클론입니다."
       />
       <div className="panel-card intro-content">
         <p>
@@ -17,7 +17,7 @@ export function IntroductionClient() {
         <h2>주요 기능</h2>
         <ul>
           <li>
-            <strong>Terminal / Map</strong> — 브로커·딜러 메신저 피드를 카테고리별로 모니터링합니다.
+            <strong>Dashboard / Bond Map</strong> — 브로커·딜러 메신저 피드를 카테고리별로 모니터링합니다.
           </li>
           <li>
             <strong>Compass / Scope</strong> — 국고·통안 및 크레딧 채권의 호가·체결 흐름을 추적합니다.
