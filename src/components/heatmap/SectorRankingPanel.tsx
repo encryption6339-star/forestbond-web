@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -46,7 +46,8 @@ export function SectorRankingPanel({ dateYmd }: { dateYmd: string }) {
       <div className="heatmap-panel-head">
         <h2 className="heatmap-panel-title">SECTOR RANKING</h2>
         <p className="heatmap-panel-desc">
-          상위 호가 건수 기준으로 특은채·은행채는 상위 5개, 그 외 섹터는 상위 10개 종목을 보여줍니다
+          상위 호가 건수 기준으로 특은채·은행채는 상위 5개, 그 외 섹터는 상위 10개 종목을 보여줍니다.
+          {data?.asof ? <span className="heatmap-panel-asof"> · 데이터 기준 {data.asof}</span> : null}
         </p>
       </div>
 

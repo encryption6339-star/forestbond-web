@@ -921,6 +921,11 @@ textarea {
   color: var(--card-muted);
 }
 
+.heatmap-panel-asof {
+  color: var(--color-brand);
+  font-weight: 600;
+}
+
 .sector-ranking-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

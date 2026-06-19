@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { fetchGovMon, type GovMonBondRow, type GovMonData } from "@/lib/heatmap-api";
@@ -81,6 +81,7 @@ export function GovMonBuySellPanel({ dateYmd }: { dateYmd: string }) {
         <h2 className="heatmap-panel-title">GOV/MON BUY/SELL</h2>
         <p className="heatmap-panel-desc">
           기준일 기준 국고(GOV)·통안(MON) 채권의 매수·매도 호가 건수 상위 종목을 시각화합니다.
+          {data?.asof ? <span className="heatmap-panel-asof"> · 데이터 기준 {data.asof}</span> : null}
         </p>
       </div>
 
