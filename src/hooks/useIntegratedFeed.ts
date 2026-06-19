@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MESSENGER_ROOMS } from "@/lib/dashboard-config";
 import { WS_DUAL_URL, WS_MAP_URL } from "@/lib/config";
 import type { BondMessage, DualBondRow } from "@/lib/types";
+import { mergeBondMessages } from "@/lib/utils";
 
 function normalizeMessages(payload: unknown): BondMessage[] {
   if (!Array.isArray(payload)) return [];
@@ -23,6 +24,12 @@ function normalizeMessages(payload: unknown): BondMessage[] {
   });
 }
 
+const MOCK_MESSAGES: BondMessage[] = [
+  { id: 1, source: "makmu", category: "gov", match_value: "25-5", trade_name: "성윤수", trade_time: "09:22:35", message: "25-5 30억 -1원 사자", trade_company: "KIDB 772-7818", created_at: new Date().toISOString() },
+  { id: 2, source: "", category: "mon", match_value: "통", trade_name: "김태연", trade_time: "09:22:45", message: "27.7.2통 민-3원 거래 후 추팔", trade_company: "** 채권 Sales", created_at: new Date().toISOString() },
+  { id: 3, source: "makmu", category: "comp", match_value: "SK", trade_name: "정**", trade_time: "09:23:10", message: "SK에너지47-3(30.4.24 민4.400,AA) 팔자", trade_company: "** 채권금융부", created_at: new Date().toISOString() },
+];
+
 export function useIntegratedFeed() {
   const [messages, setMessages] = useState<BondMessage[]>([]);
   const [govRows, setGovRows] = useState<DualBondRow[]>([]);
@@ -34,46 +41,73 @@ export function useIntegratedFeed() {
   useEffect(() => {
     let ws: WebSocket | null = null;
     let timer: ReturnType<typeof setTimeout> | null = null;
+    let mockTimer: ReturnType<typeof setTimeout> | null = null;
     let mock = false;
+    let hadRealData = false;
+
+    const applyMessages = (incoming: BondMessage[]) => {
+      if (incoming.length === 0) return;
+      hadRealData = true;
+      mock = false;
+      setMapMock(false);
+      setMessages((prev) => mergeBondMessages(prev, incoming));
+    };
 
     const startMock = () => {
+      if (hadRealData) return;
       mock = true;
       setMapMock(true);
       setMapConnected(true);
-      setMessages([
-        { id: 1, source: "makmu", category: "gov", match_value: "25-5", trade_name: "성윤수", trade_time: "09:22:35", message: "25-5 30억 -1원 사자", trade_company: "KIDB 772-7818", created_at: new Date().toISOString() },
-        { id: 2, source: "", category: "mon", match_value: "통", trade_name: "김태연", trade_time: "09:22:45", message: "27.7.2통 민-3원 거래 후 추팔", trade_company: "** 채권 Sales", created_at: new Date().toISOString() },
-        { id: 3, source: "makmu", category: "comp", match_value: "SK", trade_name: "정**", trade_time: "09:23:10", message: "SK에너지47-3(30.4.24 민4.400,AA) 팔자", trade_company: "** 채권금융부", created_at: new Date().toISOString() },
-      ]);
+      setMessages(MOCK_MESSAGES);
     };
 
     const connect = () => {
-      try { ws = new WebSocket(WS_MAP_URL); } catch { startMock(); return; }
-      ws.addEventListener("open", () => { mock = false; setMapMock(false); setMapConnected(true); });
+      try {
+        ws = new WebSocket(WS_MAP_URL);
+      } catch {
+        startMock();
+        return;
+      }
+
+      ws.addEventListener("open", () => {
+        mock = false;
+        setMapMock(false);
+        setMapConnected(true);
+      });
+
       ws.addEventListener("message", (ev) => {
         try {
           const data = JSON.parse(String(ev.data));
-          if (data.event === "map" && Array.isArray(data.payload)) {
-            setMessages(normalizeMessages(data.payload));
-          } else if (Array.isArray(data.payload)) {
-            const list = normalizeMessages(data.payload);
-            setMessages((prev) => {
-              const next = [...prev];
-              list.forEach((msg) => {
-                const idx = next.findIndex((m) => m.id === msg.id);
-                if (idx >= 0) next[idx] = msg; else next.unshift(msg);
-              });
-              return next.slice(0, 5000);
-            });
+          if (Array.isArray(data.payload)) {
+            applyMessages(normalizeMessages(data.payload));
+          } else if (Array.isArray(data)) {
+            applyMessages(normalizeMessages(data));
           }
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore malformed payloads */
+        }
       });
-      ws.addEventListener("close", () => { setMapConnected(false); if (!mock) timer = setTimeout(connect, 3000); });
-      ws.addEventListener("error", () => { if (!mock) startMock(); });
-      setTimeout(() => { if (ws && ws.readyState !== WebSocket.OPEN && !mock) startMock(); }, 5000);
+
+      ws.addEventListener("close", () => {
+        setMapConnected(false);
+        if (!mock) timer = setTimeout(connect, 3000);
+      });
+
+      ws.addEventListener("error", () => {
+        if (!hadRealData && !mock) startMock();
+      });
+
+      mockTimer = setTimeout(() => {
+        if (ws && ws.readyState !== WebSocket.OPEN && !mock && !hadRealData) startMock();
+      }, 8000);
     };
+
     connect();
-    return () => { if (timer) clearTimeout(timer); ws?.close(); };
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (mockTimer) clearTimeout(mockTimer);
+      ws?.close();
+    };
   }, []);
 
   useEffect(() => {

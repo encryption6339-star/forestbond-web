@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { WS_MAP_URL } from "@/lib/config";
 import type { BondMessage, ConnectionStatus } from "@/lib/types";
+import { mergeBondMessages } from "@/lib/utils";
 
 type Listener = (event: string, data?: unknown) => void;
 
@@ -31,6 +32,7 @@ export function useBondFeed() {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mockRef = useRef(false);
+  const hadRealDataRef = useRef(false);
 
   const emit = useCallback((event: string, data?: unknown) => {
     listenersRef.current.forEach((fn) => fn(event, data));
@@ -47,6 +49,7 @@ export function useBondFeed() {
   }, []);
 
   const startMock = useCallback(() => {
+    if (hadRealDataRef.current) return;
     mockRef.current = true;
     setStatus({ connected: true, mock: true });
     const samples: BondMessage[] = [
@@ -105,25 +108,17 @@ export function useBondFeed() {
     ws.addEventListener("message", (ev) => {
       try {
         const data = JSON.parse(String(ev.data));
-        if (data.event === "map" && Array.isArray(data.payload)) {
+        if (Array.isArray(data.payload)) {
           const list = normalizePayload(data.payload);
-          setMessages(list);
-          emit("snapshot", list);
-        } else if (Array.isArray(data.payload)) {
-          const list = normalizePayload(data.payload);
-          setMessages((prev) => {
-            const next = [...prev];
-            list.forEach((msg) => {
-              const idx = next.findIndex((m) => m.id === msg.id);
-              if (idx >= 0) next[idx] = msg;
-              else next.unshift(msg);
-            });
-            return next.slice(0, 5000);
-          });
-          emit("update", list);
+          if (list.length === 0) return;
+          hadRealDataRef.current = true;
+          mockRef.current = false;
+          setMessages((prev) => mergeBondMessages(prev, list));
+          emit(data.event === "map" ? "snapshot" : "update", list);
         } else if (Array.isArray(data)) {
           const list = normalizePayload(data);
-          setMessages(list);
+          if (list.length === 0) return;
+          setMessages((prev) => mergeBondMessages(prev, list));
           emit("snapshot", list);
         }
       } catch {
@@ -140,12 +135,12 @@ export function useBondFeed() {
     });
 
     ws.addEventListener("error", () => {
-      if (!mockRef.current) startMock();
+      if (!mockRef.current && !hadRealDataRef.current) startMock();
     });
 
     setTimeout(() => {
-      if (ws.readyState !== WebSocket.OPEN && !mockRef.current) startMock();
-    }, 5000);
+      if (ws.readyState !== WebSocket.OPEN && !mockRef.current && !hadRealDataRef.current) startMock();
+    }, 8000);
   }, [emit, startMock]);
 
   useEffect(() => {

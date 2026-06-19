@@ -37,6 +37,17 @@ export function normalizeSearch(text: string): string {
     .replace(/[\s()[\]{}_/,·]/g, "");
 }
 
+export function mergeBondMessages(prev: BondMessage[], incoming: BondMessage[], max = 5000): BondMessage[] {
+  if (incoming.length === 0) return prev;
+  const next = [...prev];
+  incoming.forEach((msg) => {
+    const idx = next.findIndex((m) => m.id === msg.id);
+    if (idx >= 0) next[idx] = msg;
+    else next.unshift(msg);
+  });
+  return next.slice(0, max);
+}
+
 export function matchesSearch(message: BondMessage, query: string): boolean {
   if (!query.trim()) return true;
   const q = normalizeSearch(query);
