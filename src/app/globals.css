@@ -422,7 +422,14 @@ textarea {
   font-size: 12px;
 }
 
-.data-table th,\n.data-table td {\n  border: 1px solid var(--card-border);\n  padding: 8px 10px;\n  text-align: left;\n  vertical-align: top;\n  color: var(--card-foreground);\n}
+.data-table th,
+.data-table td {
+  border: 1px solid var(--card-border);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  color: var(--card-foreground);
+}
 
 .data-table th {
   background: var(--surface-soft);
