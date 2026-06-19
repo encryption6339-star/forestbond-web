@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { HeatmapData } from "@/lib/types";
@@ -7,10 +7,11 @@ import {
   formatYmdDisplay,
   heatmapColor,
   todayKstYmd,
-  toYmd,
 } from "@/lib/utils";
 import { HEATMAP_CATEGORIES } from "@/lib/config";
 import { PageHeader } from "@/components/PageHeader";
+import { SectorRankingPanel } from "@/components/heatmap/SectorRankingPanel";
+import { GovMonBuySellPanel } from "@/components/heatmap/GovMonBuySellPanel";
 
 async function fetchHeatmap(date: string): Promise<HeatmapData> {
   const res = await fetch(`/heatmapapi/heatmap?date=${date}`, { cache: "no-store" });
@@ -135,6 +136,11 @@ export function HeatmapClient() {
             </table>
           </div>
         ) : null}
+      </div>
+
+      <div className="heatmap-panels-stack">
+        <SectorRankingPanel dateYmd={date} />
+        <GovMonBuySellPanel dateYmd={date} />
       </div>
     </>
   );
