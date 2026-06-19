@@ -119,8 +119,12 @@ export function useIntegratedFeed() {
       ws.addEventListener("message", (ev) => {
         try {
           const data = JSON.parse(String(ev.data));
-          if (data.event === "gov") setGovRows(Array.isArray(data.payload) ? data.payload : []);
-          if (data.event === "mon") setMonRows(Array.isArray(data.payload) ? data.payload : []);
+          if (data.event === "gov" && Array.isArray(data.payload) && data.payload.length > 0) {
+            setGovRows(data.payload);
+          }
+          if (data.event === "mon" && Array.isArray(data.payload) && data.payload.length > 0) {
+            setMonRows(data.payload);
+          }
         } catch { /* ignore */ }
       });
       ws.addEventListener("close", () => { setDualConnected(false); timer = setTimeout(connect, 3000); });

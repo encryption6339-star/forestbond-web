@@ -26,9 +26,11 @@ export function LiveChart({ line = [], candles = [], volume = [], height = 200, 
   const lineRef = useRef<ISeriesApi<"Line"> | null>(null);
   const candleRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const volRef = useRef<ISeriesApi<"Histogram"> | null>(null);
+  const fittedRef = useRef(false);
 
   useEffect(() => {
     if (!hostRef.current) return;
+    fittedRef.current = false;
     const chart = createChart(hostRef.current, {
       height,
       layout: { background: { type: ColorType.Solid, color: "#ffffff" }, textColor: "#333" },
@@ -55,8 +57,6 @@ export function LiveChart({ line = [], candles = [], volume = [], height = 200, 
         wickUpColor: "#dc2626",
         wickDownColor: "#2563eb",
       });
-    }
-    if (volume.length && (mode === "candle" || mode === "combo")) {
       volRef.current = chart.addSeries(HistogramSeries, {
         priceFormat: { type: "volume" },
         priceScaleId: "vol",
@@ -73,27 +73,37 @@ export function LiveChart({ line = [], candles = [], volume = [], height = 200, 
       ro.disconnect();
       chart.remove();
       chartRef.current = null;
+      lineRef.current = null;
+      candleRef.current = null;
+      volRef.current = null;
     };
   }, [height, mode]);
 
   useEffect(() => {
-    if (lineRef.current && line.length) {
-      lineRef.current.setData(line.map((p) => ({ time: p.time as never, value: p.value })));
+    if (!lineRef.current) return;
+    lineRef.current.setData(line.map((p) => ({ time: p.time as never, value: p.value })));
+    if (line.length && !fittedRef.current) {
+      chartRef.current?.timeScale().fitContent();
+      fittedRef.current = true;
+    } else if (line.length) {
       chartRef.current?.timeScale().scrollToRealTime();
     }
   }, [line]);
 
   useEffect(() => {
-    if (candleRef.current && candles.length) {
-      candleRef.current.setData(candles.map((p) => ({ time: p.time as never, open: p.open, high: p.high, low: p.low, close: p.close })));
+    if (!candleRef.current) return;
+    candleRef.current.setData(candles.map((p) => ({ time: p.time as never, open: p.open, high: p.high, low: p.low, close: p.close })));
+    if (candles.length && !fittedRef.current) {
+      chartRef.current?.timeScale().fitContent();
+      fittedRef.current = true;
+    } else if (candles.length) {
       chartRef.current?.timeScale().scrollToRealTime();
     }
   }, [candles]);
 
   useEffect(() => {
-    if (volRef.current && volume.length) {
-      volRef.current.setData(volume.map((p) => ({ time: p.time as never, value: p.value, color: p.color })));
-    }
+    if (!volRef.current) return;
+    volRef.current.setData(volume.map((p) => ({ time: p.time as never, value: p.value, color: p.color ?? "#64748b" })));
   }, [volume]);
 
   return <div className="live-chart" ref={hostRef} />;

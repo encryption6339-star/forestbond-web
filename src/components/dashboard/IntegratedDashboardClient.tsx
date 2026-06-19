@@ -81,7 +81,7 @@ export function IntegratedDashboardClient() {
 
       <div className="integrated-terminal">
         <section className="terminal-section">
-          <h2 className="terminal-section-title">K-Bond 메신저 실시간 (1번 영상)</h2>
+          <h2 className="terminal-section-title">K-Bond 메신저 실시간</h2>
           <div className="terminal-grid terminal-grid-3">
             {mapEnabled ? (
               MESSENGER_ROOMS.map((room) => (
@@ -99,7 +99,7 @@ export function IntegratedDashboardClient() {
 
         
         <section className="terminal-section">
-          <h2 className="terminal-section-title">실시간 차트 (2번 영상 · CHECK EXPERT+)</h2>
+          <h2 className="terminal-section-title">실시간 차트</h2>
           <div className="terminal-grid terminal-grid-3">
             {dualEnabled ? (
               <>
@@ -139,7 +139,7 @@ export function IntegratedDashboardClient() {
         </section>
 
         <section className="terminal-section">
-          <h2 className="terminal-section-title">Compass · 시장 데이터 (2번 영상)</h2>
+          <h2 className="terminal-section-title">Compass · 시장 데이터</h2>
           <div className="terminal-grid terminal-grid-2">
             {dualEnabled ? (
               <>

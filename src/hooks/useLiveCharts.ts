@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import type { BondMessage, DualBondRow } from "@/lib/types";
 
 export type LinePoint = { time: number; value: number };
@@ -8,6 +8,8 @@ export type CandlePoint = { time: number; open: number; high: number; low: numbe
 export type HistPoint = { time: number; value: number; color?: string };
 
 const MAX_POINTS = 240;
+const GOV_3Y_CODES = ["25-4", "24-11", "24-5", "24-"];
+const GOV_10Y_CODES = ["24-3", "23-10", "16-", "15-"];
 
 function toNum(v: unknown): number | null {
   const n = typeof v === "number" ? v : Number(v);
@@ -18,16 +20,21 @@ function yieldToPrice(yieldPct: number) {
   return Math.round((1000 - yieldPct * 100) * 100) / 100;
 }
 
-function bucketKey(ts: number, sec = 30) {
+function bucketKey(ts: number, sec = 15) {
   return Math.floor(ts / sec) * sec;
 }
 
-function pickRow(rows: DualBondRow[], prefer?: string) {
-  if (prefer) {
+function pickRow(rows: DualBondRow[], prefers: string[] = []) {
+  for (const prefer of prefers) {
     const hit = rows.find((r) => r.bondCD === prefer || r.bondCD?.startsWith(prefer));
-    if (hit) return hit;
+    if (hit && toNum(hit.privateEval) != null) return hit;
   }
   return rows.find((r) => toNum(r.privateEval) != null) ?? rows[0];
+}
+
+function rowSignature(row?: DualBondRow) {
+  if (!row) return "";
+  return [row.bondCD, row.privateEval, row.tradeTime, row.action, row.additionInfo?.split("\n")[0]].join("|");
 }
 
 function pushCandle(candles: CandlePoint[], ts: number, price: number): CandlePoint[] {
@@ -61,20 +68,33 @@ function pushVolume(vols: HistPoint[], ts: number, amount: number): HistPoint[] 
   return next.slice(-MAX_POINTS);
 }
 
-type SeriesState = { line: LinePoint[]; candles: CandlePoint[]; volume: HistPoint[]; last?: DualBondRow; lastYield?: number };
+type SeriesState = {
+  line: LinePoint[];
+  candles: CandlePoint[];
+  volume: HistPoint[];
+  last?: DualBondRow;
+  lastSig?: string;
+};
 
-function applyYield(setter: Dispatch<SetStateAction<SeriesState>>, row: DualBondRow | undefined, ts: number, force = false) {
+function applyRow(
+  setter: Dispatch<SetStateAction<SeriesState>>,
+  row: DualBondRow | undefined,
+  ts: number,
+  force = false
+) {
   const y = row ? toNum(row.privateEval) : null;
   if (y == null || !row) return;
+  const sig = rowSignature(row);
   setter((s) => {
-    if (!force && s.lastYield === y) return s;
+    if (!force && s.lastSig === sig) return s;
     const price = yieldToPrice(y);
+    const hasTrade = row.action === "buy" || row.action === "sell";
     return {
       last: row,
-      lastYield: y,
+      lastSig: sig,
       line: pushLine(s.line, ts, y),
       candles: pushCandle(s.candles, ts, price),
-      volume: s.volume,
+      volume: hasTrade ? pushVolume(s.volume, ts, 1) : s.volume,
     };
   });
 }
@@ -83,35 +103,33 @@ export function useLiveCharts(govRows: DualBondRow[], monRows: DualBondRow[], me
   const [gov3y, setGov3y] = useState<SeriesState>({ line: [], candles: [], volume: [] });
   const [gov10y, setGov10y] = useState<SeriesState>({ line: [], candles: [], volume: [] });
   const [monMain, setMonMain] = useState<SeriesState>({ line: [], candles: [], volume: [] });
-  const lastMsgId = useRef<number | null>(null);
 
   useEffect(() => {
     const now = Math.floor(Date.now() / 1000);
-    applyYield(setGov3y, pickRow(govRows, "24-"), now);
-    applyYield(setGov10y, pickRow(govRows, "23-10") ?? pickRow(govRows, "16-"), now);
-    applyYield(setMonMain, pickRow(monRows), now);
+    applyRow(setGov3y, pickRow(govRows, GOV_3Y_CODES), now);
+    applyRow(setGov10y, pickRow(govRows, GOV_10Y_CODES), now);
+    applyRow(setMonMain, pickRow(monRows), now);
   }, [govRows, monRows]);
 
   useEffect(() => {
-    const id = messages[0]?.id;
-    if (id == null || id === lastMsgId.current) return;
-    lastMsgId.current = id;
+    if (messages.length === 0) return;
     const now = Math.floor(Date.now() / 1000);
-    const cat = messages[0]?.category;
-    if (cat === "gov") {
+    const latestGov = messages.find((m) => m.category === "gov");
+    const latestMon = messages.find((m) => m.category === "mon");
+    if (latestGov) {
       setGov3y((s) => ({ ...s, volume: pushVolume(s.volume, now, 1) }));
       setGov10y((s) => ({ ...s, volume: pushVolume(s.volume, now, 1) }));
     }
-    if (cat === "mon") setMonMain((s) => ({ ...s, volume: pushVolume(s.volume, now, 1) }));
-  }, [messages]);
+    if (latestMon) setMonMain((s) => ({ ...s, volume: pushVolume(s.volume, now, 1) }));
+  }, [messages.length, messages[0]?.id]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       const now = Math.floor(Date.now() / 1000);
-      applyYield(setGov3y, pickRow(govRows, "24-"), now, true);
-      applyYield(setGov10y, pickRow(govRows, "23-10") ?? pickRow(govRows, "16-"), now, true);
-      applyYield(setMonMain, pickRow(monRows), now, true);
-    }, 15000);
+      applyRow(setGov3y, pickRow(govRows, GOV_3Y_CODES), now, true);
+      applyRow(setGov10y, pickRow(govRows, GOV_10Y_CODES), now, true);
+      applyRow(setMonMain, pickRow(monRows), now, true);
+    }, 5000);
     return () => clearInterval(timer);
   }, [govRows, monRows]);
 
